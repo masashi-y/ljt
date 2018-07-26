@@ -1,0 +1,387 @@
+==========================
+simple
+(A ⊃ (B ⊃ A))
+success!
+
+•   ---->  (A ⊃ (B ⊃ A)) by ⊃R 
+• A  ---->  (B ⊃ A) by ⊃R 
+• A, B  ---->  A by init
+
+==========================
+conjAssoc
+(((A ∧ (B ∧ C)) ⊃ (A ∧ B)) ∧ C)
+fail
+
+==========================
+conjComm
+((A ∧ B) ⊃ (B ∧ A))
+success!
+
+•   ---->  ((A ∧ B) ⊃ (B ∧ A)) by ⊃R 
+• (A ∧ B)  ---->  (B ∧ A) by ∧R 
+
+• (A ∧ B)  ---->  B by ∧L 
+• B, A  ---->  B by init
+
+
+• (A ∧ B)  ---->  A by ∧L 
+• A, B  ---->  A by init
+
+==========================
+implTrans
+((A ⊃ B) ⊃ ((B ⊃ C) ⊃ (A ⊃ C)))
+success!
+
+•   ---->  ((A ⊃ B) ⊃ ((B ⊃ C) ⊃ (A ⊃ C))) by ⊃R 
+• (A ⊃ B)  ---->  ((B ⊃ C) ⊃ (A ⊃ C)) by ⊃R 
+• (B ⊃ C), (A ⊃ B)  ---->  (A ⊃ C) by ⊃R 
+• (A ⊃ B), A, (B ⊃ C)  ---->  C by P⊃L 
+• (B ⊃ C), B, A  ---->  C by P⊃L 
+• C, B, A  ---->  C by init
+
+==========================
+disjComm
+((A ∨ B) ⊃ (B ∨ A))
+success!
+
+•   ---->  ((A ∨ B) ⊃ (B ∨ A)) by ⊃R 
+• (A ∨ B)  ---->  (B ∨ A) by ∨L 
+
+• A  ---->  (B ∨ A) by ∨R_2 
+• A  ---->  A by init
+
+
+• B  ---->  (B ∨ A) by ∨R_1 
+• B  ---->  B by init
+
+==========================
+random1
+(((A ∨ B) ⊃ C) ⊃ ((A ⊃ C) ∧ (B ⊃ C)))
+success!
+
+•   ---->  (((A ∨ B) ⊃ C) ⊃ ((A ⊃ C) ∧ (B ⊃ C))) by ⊃R 
+• ((A ∨ B) ⊃ C)  ---->  ((A ⊃ C) ∧ (B ⊃ C)) by ∧R 
+
+• ((A ∨ B) ⊃ C)  ---->  (A ⊃ C) by ⊃R 
+• A, ((A ∨ B) ⊃ C)  ---->  C by ∨⊃L 
+• (A ⊃ C), (B ⊃ C), A  ---->  C by P⊃L 
+• C, (B ⊃ C), A  ---->  C by init
+
+
+• ((A ∨ B) ⊃ C)  ---->  (B ⊃ C) by ⊃R 
+• B, ((A ∨ B) ⊃ C)  ---->  C by ∨⊃L 
+• (B ⊃ C), (A ⊃ C), B  ---->  C by P⊃L 
+• C, (A ⊃ C), B  ---->  C by init
+
+==========================
+random2
+((((A ∨ B) ∨ C) ⊃ D) ⊃ (((A ⊃ D) ∧ (B ⊃ D)) ∧ (C ⊃ D)))
+success!
+
+•   ---->  ((((A ∨ B) ∨ C) ⊃ D) ⊃ (((A ⊃ D) ∧ (B ⊃ D)) ∧ (C ⊃ D))) by ⊃R 
+• (((A ∨ B) ∨ C) ⊃ D)  ---->  (((A ⊃ D) ∧ (B ⊃ D)) ∧ (C ⊃ D)) by ∧R 
+
+• (((A ∨ B) ∨ C) ⊃ D)  ---->  ((A ⊃ D) ∧ (B ⊃ D)) by ∧R 
+
+• (((A ∨ B) ∨ C) ⊃ D)  ---->  (A ⊃ D) by ⊃R 
+• A, (((A ∨ B) ∨ C) ⊃ D)  ---->  D by ∨⊃L 
+• (C ⊃ D), A, ((A ∨ B) ⊃ D)  ---->  D by ∨⊃L 
+• (A ⊃ D), (B ⊃ D), (C ⊃ D), A  ---->  D by P⊃L 
+• D, (B ⊃ D), (C ⊃ D), A  ---->  D by init
+
+
+• (((A ∨ B) ∨ C) ⊃ D)  ---->  (B ⊃ D) by ⊃R 
+• B, (((A ∨ B) ∨ C) ⊃ D)  ---->  D by ∨⊃L 
+• (C ⊃ D), B, ((A ∨ B) ⊃ D)  ---->  D by ∨⊃L 
+• (B ⊃ D), (A ⊃ D), (C ⊃ D), B  ---->  D by P⊃L 
+• D, (A ⊃ D), (C ⊃ D), B  ---->  D by init
+
+
+• (((A ∨ B) ∨ C) ⊃ D)  ---->  (C ⊃ D) by ⊃R 
+• C, (((A ∨ B) ∨ C) ⊃ D)  ---->  D by ∨⊃L 
+• (C ⊃ D), C, ((A ∨ B) ⊃ D)  ---->  D by ∨⊃L 
+• (C ⊃ D), (B ⊃ D), (A ⊃ D), C  ---->  D by P⊃L 
+• D, (B ⊃ D), (A ⊃ D), C  ---->  D by init
+
+==========================
+random3
+(((A ⊃ B) ⊃ C) ⊃ (D ⊃ (D ∨ D)))
+success!
+
+•   ---->  (((A ⊃ B) ⊃ C) ⊃ (D ⊃ (D ∨ D))) by ⊃R 
+• ((A ⊃ B) ⊃ C)  ---->  (D ⊃ (D ∨ D)) by ⊃R 
+• D, ((A ⊃ B) ⊃ C)  ---->  (D ∨ D) by ∨R_1 
+• D, ((A ⊃ B) ⊃ C)  ---->  D by init
+
+==========================
+curry
+(((A ∧ B) ⊃ C) ⊃ (A ⊃ (B ⊃ C)))
+success!
+
+•   ---->  (((A ∧ B) ⊃ C) ⊃ (A ⊃ (B ⊃ C))) by ⊃R 
+• ((A ∧ B) ⊃ C)  ---->  (A ⊃ (B ⊃ C)) by ⊃R 
+• A, ((A ∧ B) ⊃ C)  ---->  (B ⊃ C) by ⊃R 
+• B, A, ((A ∧ B) ⊃ C)  ---->  C by ∧⊃L 
+• ((A ⊃ B) ⊃ C), B, A  ---->  C by ⊃⊃L 
+
+• (B ⊃ C), A, B, A  ---->  B by P⊃L 
+• B, C, A, A  ---->  B by init
+
+
+• C, B, A  ---->  C by init
+
+==========================
+uncurry
+((A ⊃ (B ⊃ C)) ⊃ ((A ∧ B) ⊃ C))
+success!
+
+•   ---->  ((A ⊃ (B ⊃ C)) ⊃ ((A ∧ B) ⊃ C)) by ⊃R 
+• (A ⊃ (B ⊃ C))  ---->  ((A ∧ B) ⊃ C) by ⊃R 
+• (A ⊃ (B ⊃ C)), (A ∧ B)  ---->  C by ∧L 
+• (A ⊃ (B ⊃ C)), B, A  ---->  C by P⊃L 
+• (B ⊃ C), B, A  ---->  C by P⊃L 
+• C, B, A  ---->  C by init
+
+==========================
+projConjL
+((A ∧ B) ⊃ A)
+success!
+
+•   ---->  ((A ∧ B) ⊃ A) by ⊃R 
+• (A ∧ B)  ---->  A by ∧L 
+• A, B  ---->  A by init
+
+==========================
+projConjR
+((A ∧ B) ⊃ B)
+success!
+
+•   ---->  ((A ∧ B) ⊃ B) by ⊃R 
+• (A ∧ B)  ---->  B by ∧L 
+• B, A  ---->  B by init
+
+==========================
+impFst
+(A ⊃ (B ⊃ A))
+success!
+
+•   ---->  (A ⊃ (B ⊃ A)) by ⊃R 
+• A  ---->  (B ⊃ A) by ⊃R 
+• A, B  ---->  A by init
+
+==========================
+impSnd
+(A ⊃ (B ⊃ A))
+success!
+
+•   ---->  (A ⊃ (B ⊃ A)) by ⊃R 
+• A  ---->  (B ⊃ A) by ⊃R 
+• A, B  ---->  A by init
+
+==========================
+flip
+((A ⊃ (B ⊃ C)) ⊃ (B ⊃ (A ⊃ C)))
+success!
+
+•   ---->  ((A ⊃ (B ⊃ C)) ⊃ (B ⊃ (A ⊃ C))) by ⊃R 
+• (A ⊃ (B ⊃ C))  ---->  (B ⊃ (A ⊃ C)) by ⊃R 
+• B, (A ⊃ (B ⊃ C))  ---->  (A ⊃ C) by ⊃R 
+• (A ⊃ (B ⊃ C)), A, B  ---->  C by P⊃L 
+• (B ⊃ C), A, B  ---->  C by P⊃L 
+• C, A, B  ---->  C by init
+
+==========================
+tripleNeg
+(¬ ¬ ¬ A ⊃ ¬ A)
+success!
+
+•   ---->  (¬ ¬ ¬ A ⊃ ¬ A) by ⊃R 
+• ¬ ¬ ¬ A  ---->  ¬ A by ⊃R 
+• ¬ ¬ ¬ A, A  ---->  ⊥ by ⊃⊃L 
+
+• ¬ A, A, ¬ ⊥  ---->  ⊥ by ⊥⊃L 
+• ¬ A, A  ---->  ⊥ by P⊃L 
+• ⊥, A  ---->  ⊥ by ⊥L
+
+
+• ⊥, A  ---->  ⊥ by ⊥L
+
+==========================
+long
+((((A ⊃ B) ⊃ C) ⊃ D) ⊃ (((A ⊃ B) ⊃ C) ⊃ D))
+fail
+
+==========================
+long2
+(¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) ⊃ ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E))
+success!
+
+•   ---->  (¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) ⊃ ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)) by ⊃R 
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)  ---->  ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) by ⊃R 
+• ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)  ---->  ⊥ by ⊃⊃L 
+
+• ((A ⊃ B) ⊃ C), (D ⊃ E), ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)  ---->  D by ⊃⊃L 
+
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), A, (B ⊃ C), (D ⊃ E)  ---->  B by ⊃⊃L 
+
+• (((A ⊃ B) ⊃ C) ⊃ D), ¬ E, A, (B ⊃ C), (D ⊃ E)  ---->  E by ⊃⊃L 
+
+• (A ⊃ B), (C ⊃ D), ¬ E, A, (B ⊃ C), (D ⊃ E)  ---->  C by P⊃L 
+• (B ⊃ C), B, (C ⊃ D), ¬ E, A, (D ⊃ E)  ---->  C by P⊃L 
+• C, B, (C ⊃ D), ¬ E, A, (D ⊃ E)  ---->  C by init
+
+
+• (D ⊃ E), D, ¬ E, A, (B ⊃ C)  ---->  E by P⊃L 
+• E, D, ¬ E, A, (B ⊃ C)  ---->  E by init
+
+
+• ⊥, A, (B ⊃ C), (D ⊃ E)  ---->  B by ⊥L
+
+
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), C, (D ⊃ E)  ---->  D by ⊃⊃L 
+
+• (((A ⊃ B) ⊃ C) ⊃ D), ¬ E, C, (D ⊃ E)  ---->  E by ⊃⊃L 
+
+• (C ⊃ D), (A ⊃ B), ¬ E, C, (D ⊃ E)  ---->  C by P⊃L 
+• C, D, (A ⊃ B), ¬ E, (D ⊃ E)  ---->  C by init
+
+
+• (D ⊃ E), D, ¬ E, C  ---->  E by P⊃L 
+• E, D, ¬ E, C  ---->  E by init
+
+
+• ⊥, C, (D ⊃ E)  ---->  D by ⊥L
+
+
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), E  ---->  ⊥ by ⊃⊃L 
+
+• (((A ⊃ B) ⊃ C) ⊃ D), ¬ E, E  ---->  E by ⊃⊃L 
+
+• ¬ E, (A ⊃ B), (C ⊃ D), E  ---->  C by P⊃L 
+• ⊥, (A ⊃ B), (C ⊃ D), E  ---->  C by ⊥L
+
+
+• ¬ E, D, E  ---->  E by P⊃L 
+• ⊥, D, E  ---->  E by ⊥L
+
+
+• ⊥, E  ---->  ⊥ by ⊥L
+
+==========================
+verylong
+(¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) ⊃ (¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) ∨ ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)))
+success!
+
+•   ---->  (¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) ⊃ (¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) ∨ ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E))) by ⊃R 
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)  ---->  (¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) ∨ ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)) by ∨R_1 
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)  ---->  ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E) by ⊃R 
+• ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)  ---->  ⊥ by ⊃⊃L 
+
+• ((A ⊃ B) ⊃ C), (D ⊃ E), ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E)  ---->  D by ⊃⊃L 
+
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), A, (B ⊃ C), (D ⊃ E)  ---->  B by ⊃⊃L 
+
+• (((A ⊃ B) ⊃ C) ⊃ D), ¬ E, A, (B ⊃ C), (D ⊃ E)  ---->  E by ⊃⊃L 
+
+• (A ⊃ B), (C ⊃ D), ¬ E, A, (B ⊃ C), (D ⊃ E)  ---->  C by P⊃L 
+• (B ⊃ C), B, (C ⊃ D), ¬ E, A, (D ⊃ E)  ---->  C by P⊃L 
+• C, B, (C ⊃ D), ¬ E, A, (D ⊃ E)  ---->  C by init
+
+
+• (D ⊃ E), D, ¬ E, A, (B ⊃ C)  ---->  E by P⊃L 
+• E, D, ¬ E, A, (B ⊃ C)  ---->  E by init
+
+
+• ⊥, A, (B ⊃ C), (D ⊃ E)  ---->  B by ⊥L
+
+
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), C, (D ⊃ E)  ---->  D by ⊃⊃L 
+
+• (((A ⊃ B) ⊃ C) ⊃ D), ¬ E, C, (D ⊃ E)  ---->  E by ⊃⊃L 
+
+• (C ⊃ D), (A ⊃ B), ¬ E, C, (D ⊃ E)  ---->  C by P⊃L 
+• C, D, (A ⊃ B), ¬ E, (D ⊃ E)  ---->  C by init
+
+
+• (D ⊃ E), D, ¬ E, C  ---->  E by P⊃L 
+• E, D, ¬ E, C  ---->  E by init
+
+
+• ⊥, C, (D ⊃ E)  ---->  D by ⊥L
+
+
+• ¬ ((((A ⊃ B) ⊃ C) ⊃ D) ⊃ E), E  ---->  ⊥ by ⊃⊃L 
+
+• (((A ⊃ B) ⊃ C) ⊃ D), ¬ E, E  ---->  E by ⊃⊃L 
+
+• ¬ E, (A ⊃ B), (C ⊃ D), E  ---->  C by P⊃L 
+• ⊥, (A ⊃ B), (C ⊃ D), E  ---->  C by ⊥L
+
+
+• ¬ E, D, E  ---->  E by P⊃L 
+• ⊥, D, E  ---->  E by ⊥L
+
+
+• ⊥, E  ---->  ⊥ by ⊥L
+
+==========================
+glivenko
+¬ ¬ (((A ⊃ B) ⊃ A) ⊃ A)
+success!
+
+•   ---->  ¬ ¬ (((A ⊃ B) ⊃ A) ⊃ A) by ⊃R 
+• ¬ (((A ⊃ B) ⊃ A) ⊃ A)  ---->  ⊥ by ⊃⊃L 
+
+• ((A ⊃ B) ⊃ A), ¬ A  ---->  A by ⊃⊃L 
+
+• ¬ A, A, (B ⊃ A)  ---->  B by P⊃L 
+• ⊥, A, (B ⊃ A)  ---->  B by ⊥L
+
+
+• A, ¬ A  ---->  A by init
+
+
+• ⊥  ---->  ⊥ by ⊥L
+
+==========================
+duality1
+((¬ A ∨ ¬ B) ⊃ ¬ (A ∧ B))
+success!
+
+•   ---->  ((¬ A ∨ ¬ B) ⊃ ¬ (A ∧ B)) by ⊃R 
+• (¬ A ∨ ¬ B)  ---->  ¬ (A ∧ B) by ⊃R 
+• (A ∧ B), (¬ A ∨ ¬ B)  ---->  ⊥ by ∧L 
+• B, A, (¬ A ∨ ¬ B)  ---->  ⊥ by ∨L 
+
+• ¬ A, B, A  ---->  ⊥ by P⊃L 
+• ⊥, B, A  ---->  ⊥ by ⊥L
+
+
+• ¬ B, B, A  ---->  ⊥ by P⊃L 
+• ⊥, B, A  ---->  ⊥ by ⊥L
+
+==========================
+duality2
+(¬ ¬ ⊤ ∧ (⊥ ⊃ ¬ ⊤))
+success!
+
+•   ---->  (¬ ¬ ⊤ ∧ (⊥ ⊃ ¬ ⊤)) by ∧R 
+
+•   ---->  ¬ ¬ ⊤ by ⊃R 
+• ¬ ⊤  ---->  ⊥ by ⊤⊃L 
+• ⊥  ---->  ⊥ by ⊥L
+
+
+•   ---->  (⊥ ⊃ ¬ ⊤) by ⊃R 
+• ⊥  ---->  ¬ ⊤ by ⊃R 
+• ⊤, ⊥  ---->  ⊥ by ⊤L 
+• ⊥  ---->  ⊥ by ⊥L
+
+==========================
+exFalsoQuodlibet
+(⊥ ⊃ A)
+success!
+
+•   ---->  (⊥ ⊃ A) by ⊃R 
+• ⊥  ---->  A by ⊥L
+
