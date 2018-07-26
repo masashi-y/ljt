@@ -145,7 +145,7 @@ let rec step goal = match goal with
         OneInf (BotImplL, step newgoal, goal)
     (* (D ⊃ E) ⊃ B, Γ => G |- (D & E) ⊃ B, Γ => G *)
     | (g, Impl (Conj (d, e), b) :: o), c ->
-        let newgoal =  (g, o) $$ ((d => e) => b) ===> c in
+        let newgoal =  (g, o) $$ (d => (e => b)) ===> c in
         OneInf (ConjImplL, step newgoal, goal)
     (* D ⊃ B, E ⊃ B, Γ => G |- (D | E) ⊃ B, Γ => G *)
     | (g, Impl (Disj (d, e), b) :: o), c ->
@@ -176,21 +176,20 @@ and searchSync g c =
 and eliminate = function
     | Atom x, (Atom y, ctx) when x = y ->
         Some (ZeroInf (Init, (Atom x :: ctx, []) ===> Atom y))
-    | _, (Atom _, _) -> None
     (* B, A, Γ => G |- A ⊃ B, A, Γ => G *)
-    | c, (Impl (Atom x, b), ctx) ->
-        if List.exists (fun y -> y = Atom x) ctx then
-            let goal = ((Atom x => b) :: ctx, []) ===> c in
-            let newgoal = (ctx, []) $$ b ===> c in
-            Some (OneInf (AtomImplL, step newgoal, goal))
-        else None
+    | c, (Impl (Atom x, b), ctx) when List.mem (Atom x) ctx ->
+        let goal = ((Atom x => b) :: ctx, []) ===> c in
+        let newgoal = (ctx, []) $$ b ===> c in
+        (try Some (OneInf (AtomImplL, step newgoal, goal))
+        with NoProof -> None)
     (* E ⊃ B, D, Γ => E    B, Γ => G |- (D ⊃ E) ⊃ B, Γ => G *)
     | c, (Impl (Impl (d, e), b), ctx) ->
         let goal = (((d => e) => b) :: ctx, []) ===> c in
         let newgoal1 = (ctx, []) $$ (e => b) $$ d ===> e in
         let newgoal2 = (ctx, []) $$ b ===> c in
-        Some (TwoInf (ImplImplL, step newgoal1, step newgoal2, goal))
-    | _ -> failwith "error in eliminate"
+        (try Some (TwoInf (ImplImplL, step newgoal1, step newgoal2, goal))
+        with NoProof -> None)
+    | _ -> None
 
 let prove c =
    try Some (step (([], []) ===> c))
@@ -210,7 +209,9 @@ let e = !"E"
 
 let () =
 test "simple" (a => (b => a));
-test "conjAssoc" (a &. (b &. c) => (a &. b) &. c);
+test "simple2" (((a => b) => c) => ((a => b) => c));
+test "simple3" ((((a => b) => c) => d) => (c => d));
+test "conjAssoc" ((a &. (b &. c)) => ((a &. b) &. c));
 test "conjComm"  ((a &. b) => (b &. a));
 test "implTrans" ((a => b) => ((b => c) => (a => c)));
 test "disjComm"  ((a |. b) => (b |. a));
