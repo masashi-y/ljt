@@ -9,6 +9,7 @@ type prop =
     | Top
     | Bot
 
+
 type context = prop list * prop list
 
 type sequent = context * prop
@@ -82,16 +83,20 @@ let sequent_pp out ((g, o), prop) =
         List.iter (Printf.fprintf out ", %a" prop_pp) ps);
     Printf.fprintf out "  ---->  %a" prop_pp prop
  
-let rec derivation_pp out = function
-    | ZeroInf (rule, seq) ->
-        Printf.fprintf out "• %a by %a\n"
-            sequent_pp seq rule_pp rule
-    | OneInf (rule, deriv, seq) ->
-        Printf.fprintf out "• %a by %a \n%a"
-            sequent_pp seq rule_pp rule derivation_pp deriv
-    | TwoInf(rule, deriv1, deriv2, seq) ->
-        Printf.fprintf out "• %a by %a \n\n%a\n\n%a"
-            sequent_pp seq rule_pp rule derivation_pp deriv1 derivation_pp deriv2
+let rec derivation_pp out deriv =
+    let rec aux out (depth, deriv) = match deriv with
+        | ZeroInf (rule, seq) ->
+            Printf.fprintf out "%*s• %a by %a\n"
+                depth " " sequent_pp seq rule_pp rule
+        | OneInf (rule, deriv, seq) ->
+            Printf.fprintf out "%*s• %a by %a \n%a"
+                depth " " sequent_pp seq rule_pp rule aux (depth + 1, deriv)
+        | TwoInf(rule, deriv1, deriv2, seq) ->
+            Printf.fprintf out "%*s• %a by %a \n\n%a\n%a"
+                depth " " sequent_pp seq rule_pp rule aux
+                (depth + 1, deriv1) aux (depth + 1, deriv2) in
+    aux out (0, deriv)
+
 
 (* insert a proposition to context. *)
 let ($$) (g, o) prop = match prop with
@@ -110,48 +115,67 @@ let all_contexts =
 let rec step goal = match goal with
     (* Γ => Top *)
     | context, Top -> ZeroInf (TopR, goal)
-    (* Γ => A,  Γ => B  |-  Γ => A & B *)
+    (* Γ => A,  Γ => B
+      ------------------
+       Γ => A & B     *)
     | context, Conj (a, b) ->
         let newgoal1 = context ===> a in
         let newgoal2 = context ===> b in
         TwoInf (ConjR, step newgoal1, step newgoal2, goal)
-    (* A, Γ => B |- Γ => A ⊃ B *)
+    (*  A, Γ => B
+      ----------------
+        Γ => A ⊃ B   *)
     | context, Impl (a, b) ->
         let newgoal = context $$ a ===> b in
         OneInf (ImplR, step newgoal, goal)
-    (* A, B, Γ => G |- A & B, Γ => G *)
+    (*  A, B, Γ => G
+      ----------------
+        A & B, Γ => G  *)
     | (g, Conj (a, b) :: o), c ->
         let newgoal = ((g, o) $$ a $$ b) ===> c in
         OneInf (ConjL, step newgoal, goal)
-    (* Γ => G |- Top, Γ => G *)
+    (*    Γ => G
+      ---------------
+       Top, Γ => G  *)
     | (g, Top :: o), c ->
         let newgoal = (g, o) ===> c in
         OneInf (TopL, step newgoal, goal)
     (* ?? *)
     | (g, Bot :: o), c ->
         ZeroInf (BotL, (Bot :: g, o) ===> c)
-    (* A, Γ => G    B, Γ => G |- A | B, Γ => G *)
+    (*  A, Γ => G    B, Γ => G
+      ---------------------------
+            A | B, Γ => G       *)
     | (g, Disj (a, b) :: o), c ->
         let newgoal1 = (g, o) $$ a ===> c in
         let newgoal2 = (g, o) $$ b ===> c in
         TwoInf (DisjL, step newgoal1, step newgoal2, goal)
-    (* A, Γ => G |- Top ⊃ A, Γ => G *)
+    (*     A, Γ => G
+       Top ⊃ A, Γ => G   *)
     | (g, Impl (Top, b) :: o), c ->
         let newgoal = (g, o) $$ b ===> c in
         OneInf (TopImplL, step newgoal, goal)
-    (* ?? Γ => G |- Bot ⊃ A, Γ => G *)
+    (*       Γ => G
+      --------------------
+        Bot ⊃ A, Γ => G  *)
     | (g, Impl (Bot, b) :: o), c ->
         let newgoal = (g, o) ===> c in
         OneInf (BotImplL, step newgoal, goal)
-    (* (D ⊃ E) ⊃ B, Γ => G |- (D & E) ⊃ B, Γ => G *)
+    (*   (D ⊃ E) ⊃ B, Γ => G
+      --------------------------
+         (D & E) ⊃ B, Γ => G   *)
     | (g, Impl (Conj (d, e), b) :: o), c ->
         let newgoal =  (g, o) $$ (d => (e => b)) ===> c in
         OneInf (ConjImplL, step newgoal, goal)
-    (* D ⊃ B, E ⊃ B, Γ => G |- (D | E) ⊃ B, Γ => G *)
+    (*   D ⊃ B, E ⊃ B, Γ => G
+      --------------------------
+         (D | E) ⊃ B, Γ => G   *)
     | (g, Impl (Disj (d, e), b) :: o), c ->
         let newgoal = ((g, o) $$ (d => b) $$ (e => b)) ===> c in
         OneInf (DisjImplL, step newgoal, goal)
-    (* Γ => A |- Γ => A | B  _or_  Γ => B |- Γ => A | B *)
+    (*     Γ => A          Γ => B
+      -------------- or ---------------
+         Γ => A | B      Γ => A | B    *)
     | (g, []), Disj (a, b) -> begin
         try
             OneInf (DisjL, searchSync g (Disj (a, b)), goal)
@@ -176,13 +200,17 @@ and searchSync g c =
 and eliminate = function
     | Atom x, (Atom y, ctx) when x = y ->
         Some (ZeroInf (Init, (Atom x :: ctx, []) ===> Atom y))
-    (* B, A, Γ => G |- A ⊃ B, A, Γ => G *)
+    (*    B, A, Γ => G
+      ---------------------
+       A ⊃ B, A, Γ => G   *)
     | c, (Impl (Atom x, b), ctx) when List.mem (Atom x) ctx ->
         let goal = ((Atom x => b) :: ctx, []) ===> c in
         let newgoal = (ctx, []) $$ b ===> c in
         (try Some (OneInf (AtomImplL, step newgoal, goal))
         with NoProof -> None)
-    (* E ⊃ B, D, Γ => E    B, Γ => G |- (D ⊃ E) ⊃ B, Γ => G *)
+    (*  E ⊃ B, D, Γ => E    B, Γ => G
+      ---------------------------------
+            (D ⊃ E) ⊃ B, Γ => G      *)
     | c, (Impl (Impl (d, e), b), ctx) ->
         let goal = (((d => e) => b) :: ctx, []) ===> c in
         let newgoal1 = (ctx, []) $$ (e => b) $$ d ===> e in
