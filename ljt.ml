@@ -392,9 +392,11 @@ let () =
     => (exists "x" ((!!"woman"[?."x"]) &. (exists "y" ((!!"tea"[?."y"]) &. (!!"order"[?."x"; ?."y"]))))))) in
     let example3 = (forall "x" ((!!"tea"[?."x"]) |. (!!"coffee"[?."x"])))
     => (forall "x" ((!!"tea"[?."x"]) |. (!!"coffee"[?."x"]))) in
+    let example4 = (exists "x" (~.(!!"P"[?."x"]))) => (~.(forall "x" (!!"P"[?."x"]))) in
     test "forall" example;
     test "ccg2lambda" example2;
     test "ccg2lambda2" example3;
+    test "test" example4;
 
 (*
 let a = !"A"
