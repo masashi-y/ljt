@@ -5,7 +5,7 @@
 
 #### Usage
 
-```
+```sh
 $ echo "(a /\ b) => (b /\ a)" | ocaml ljt.ml
 
 > ==========================
@@ -26,14 +26,14 @@ $ echo "(a /\ b) => (b /\ a)" | ocaml ljt.ml
 
 Some interesting unit tests:
 
-```ocaml
+```sh
 $ ocaml ljt.ml test
 ```
 
 ###### Issue
 
 * The implementation of the formula parser is very naive and does not consider precedence and associativity.
-Please add parentheses (`(` and `)`) to specify them!
+Please add parentheses`(`, `)` to specify them!
 
 ###### Acknowledgement
 Standard ML implementation: https://github.com/ayberkt/sequents
